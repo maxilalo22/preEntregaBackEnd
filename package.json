@@ -1,0 +1,20 @@
+{
+  "name": "proyectos-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "productManager.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxilalo22/preEntregaBackEnd.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxilalo22/preEntregaBackEnd/issues"
+  },
+  "homepage": "https://github.com/maxilalo22/preEntregaBackEnd#readme"
+}
