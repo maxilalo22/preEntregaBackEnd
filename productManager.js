@@ -1,54 +1,34 @@
 import fs from 'fs'
+
 class ProductManager {
     constructor() {
-        this.products = [];
-        this.id = 1;
         this.path = './products.json';
+        this.products = [];
+        this.Id = 1;
+        this.loadProducts();
     }
 
-    generarId() {
-        return this.id++;
-    }
-
-    archivoProducts() {
-        try {
-            fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 2));
-        } catch (error) {
-            console.log('Error al escribir el archivo de productos', error);
-        }
-    }
-
-    async leerProducts() {
-        try {
-            const data = await fs.promises.readFile(this.path, 'utf-8');
-            this.products = JSON.parse(data);
-            console.log('Productos cargados desde el archivo JSON:');
-            console.log(this.products);
-        } catch (error) {
-            console.log('No se encontró el archivo de productos.');
-        }
-    }
-
-
-    addProduct({ title, description, price, thumbnail, code, stock }) {
-        const product = {
-            id: this.generarId(),
-            title,
-            description,
-            price,
-            thumbnail,
-            code,
-            stock
+    addProduct(producto) {
+        if (!producto.title || !producto.description || !producto.price || !producto.thumbnail || !producto.code || !producto.stock) {
+            throw new Error('Todos los campos son obligatorios.');
+            
         }
 
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
-            throw new Error("Todos los campos son requeridos!");
+        const verificacionProd = this.products.find(productoExistente => productoExistente.code === producto.code);
+        if (verificacionProd) {
+            throw new Error('El campo "code" ya existe.');
         }
-        const codigoExistente = this.products.find(product => product.code === code)
-        if (codigoExistente) throw new Error('El código de producto ya existe')
 
-        this.products.push(product);
-        this.archivoProducts();
+        const productoNuevo = {
+            id: this.Id,
+            ...producto,
+        };
+
+        this.products.push(productoNuevo);
+        this.Id++;
+
+        this.saveProducts();
+        console.log('Producto agregado correctamente.');
     }
 
     getProducts() {
@@ -56,9 +36,12 @@ class ProductManager {
     }
 
     getProductById(id) {
-        const idProduct = this.products.find(product => product.id === id);
-        if (!idProduct) throw new Error(`ID Not Found!`);
-        return idProduct;
+        const producto = this.products.find(productoExistente => productoExistente.id === id);
+        if (producto) {
+            return producto;
+        } else {
+            console.log('Producto no encontrado.');
+        }
     }
 
     async updateProduct(id, dataToUpdate) {
@@ -75,29 +58,36 @@ class ProductManager {
             console.log(`No se encontró un producto con ID ${id}. No se pudo actualizar.`);
         }
 
-        this.archivoProducts();
+        this.saveProducts();
         console.log('Producto actualizado', actProduct);
     }
 
     async deleteProduct(id) {
-        const borrarProduct = this.products.find(product => product.id === id);
-
-        if (borrarProduct) {
-            const borrarProductIndex = this.products.indexOf(borrarProduct);
-            this.products.splice(borrarProductIndex, 1);
-
-            try {
-                await this.archivoProducts();
-                console.log(`Producto con ID ${id} eliminado.`);
-            } catch (error) {
-                console.log('Error al eliminar el producto', error);
-            }
+        const productIndex = this.products.findIndex(productoExistente => productoExistente.id === id);
+        if (productIndex !== -1) {
+            const deletedProduct = this.products.splice(productIndex, 1)[0];
+            this.saveProducts();
+            console.log('Producto eliminado correctamente.');
         } else {
-            console.log(`No se encontró un producto con ID ${id}. No se pudo eliminar.`);
+            console.log('Producto no encontrado.');
         }
     }
 
+    loadProducts() {
+        try {
+            const data = fs.readFileSync(this.path, 'utf-8');
+            this.products = JSON.parse(data);
+            if (this.products.length > 0) {
+                const lastProductId = this.products[this.products.length - 1].id;
+                this.Id = lastProductId + 1;
+            }
+        } catch (error) {
+        }
+    }
 
+    saveProducts() {
+        fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
+    }
 }
 
 const product = new ProductManager();
@@ -109,7 +99,7 @@ product.addProduct({
     thumbnail: 'lalala',
     code: 1234,
     stock: 120
-});
+}); 
 
 product.addProduct({
     title: 'Fanta',
@@ -127,8 +117,8 @@ product.addProduct({
     thumbnail: 'fernesuli',
     code: 123456,
     stock: 120
-});
-console.log(product.getProducts())
+}); 
+console.log(product.getProducts()) 
 
 
 product.updateProduct(1, {
@@ -144,9 +134,3 @@ product.updateProduct(1, {
 
 
 product.deleteProduct(2);
-
-
-
-
-//console.log(product.getProductById(2))
-
