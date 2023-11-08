@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/maxilalo22/preEntregaBackEnd/issues"
   },
-  "homepage": "https://github.com/maxilalo22/preEntregaBackEnd#readme"
+  "homepage": "https://github.com/maxilalo22/preEntregaBackEnd#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }

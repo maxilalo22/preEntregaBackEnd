@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-class ProductManager {
+export default class ProductManager {
     constructor() {
         this.path = './products.json';
         this.products = [];
@@ -58,7 +58,7 @@ class ProductManager {
             console.log(`No se encontró un producto con ID ${id}. No se pudo actualizar.`);
         }
 
-        this.saveProducts();
+        await this.saveProducts();
         console.log('Producto actualizado', actProduct);
     }
 
@@ -66,14 +66,14 @@ class ProductManager {
         const productIndex = this.products.findIndex(productoExistente => productoExistente.id === id);
         if (productIndex !== -1) {
             const deletedProduct = this.products.splice(productIndex, 1)[0];
-            this.saveProducts();
+            await this.saveProducts();
             console.log('Producto eliminado correctamente.');
         } else {
             console.log('Producto no encontrado.');
         }
     }
 
-    loadProducts() {
+    async loadProducts() {
         try {
             const data = fs.readFileSync(this.path, 'utf-8');
             this.products = JSON.parse(data);
@@ -81,18 +81,17 @@ class ProductManager {
                 const lastProductId = this.products[this.products.length - 1].id;
                 this.Id = lastProductId + 1;
             }
-        } catch (error) {
-        }
+        } catch (error){}
     }
 
-    saveProducts() {
-        fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
+    async saveProducts() {
+        await fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
     }
 }
 
 const product = new ProductManager();
 
-product.addProduct({
+/* product.addProduct({
     title: 'Coca Cola',
     description: 'Bebida',
     price: 1200,
@@ -120,7 +119,6 @@ product.addProduct({
 }); 
 console.log(product.getProducts()) 
 
-
 product.updateProduct(1, {
     title: 'Coca Cola',
     description: 'Bebida',
@@ -128,9 +126,25 @@ product.updateProduct(1, {
     thumbnail: 'lalala',
     code: 1234,
     stock: 120
-})
+}) */
+
+/* product.addProduct({
+    title: 'Baggio',
+    description: 'Bebida',
+    price: 1200,
+    thumbnail: 'juguito.jpg',
+    code: 1234567,
+    stock: 120
+}); 
+product.addProduct({
+    title: 'tomate',
+    description: 'verdura',
+    price: 1500,
+    thumbnail: 'tomatito.jpg',
+    code: 12345678,
+    stock: 120
+}); */
 
 
 
-
-product.deleteProduct(2);
+//product.deleteProduct(2);
